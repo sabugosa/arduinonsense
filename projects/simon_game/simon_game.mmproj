@@ -1,0 +1,11 @@
+<mm_project serial_port="COM1" board="Arduino Diecimila or Duemilanove w/ ATmega168" programmer="USBasp" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+  <files>
+    <file name="main.cpp" open="yes" />
+    <file name="main.h" open="yes" />
+  </files>
+  <extras>
+  </extras>
+  <externals>
+    <external name="D:\projetos\eletronica\arduino\libs\Playstation2\PS2X_lib.cpp" />
+  </externals>
+</mm_project>

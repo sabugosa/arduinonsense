@@ -1,0 +1,13 @@
+<mm_project serial_port="COM1" board="Arduino Diecimila or Duemilanove w/ ATmega168" programmer="USBasp" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+  <files>
+    <file name="example.cpp" open="yes" />
+    <file name="example.h" open="yes" />
+    <file name="PCM.c" open="yes" />
+    <file name="mallandro.cpp" open="yes" />
+    <file name="mallandro.h" open="yes" />
+  </files>
+  <extras>
+  </extras>
+  <externals>
+  </externals>
+</mm_project>
