@@ -1,0 +1,12 @@
+<mm_project serial_port="COM6" board="Arduino Duemilanove w/ ATmega328" programmer="" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+  <files>
+    <file name="teste_display_triplo_main.h" open="yes" />
+    <file name="teste_display_triplo_main.cpp" open="yes" />
+    <file name="a573.cpp" open="yes" />
+    <file name="a573.h" open="yes" />
+  </files>
+  <extras>
+  </extras>
+  <externals>
+  </externals>
+</mm_project>
