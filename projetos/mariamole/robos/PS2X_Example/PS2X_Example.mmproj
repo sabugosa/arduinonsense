@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="0" serial_port="COM6" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths=";$(LIBRARIES)/Playstation2" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="69058864" serialPortSpeed="" isLibrary="0">
+    <files>
+        <file name="PS2X_Example.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="Playstation2/PS2X_lib.cpp" open="yes"/>
+        <external name="Playstation2/PS2X_lib.h" open="yes"/>
+    </externals>
+</mm_project>

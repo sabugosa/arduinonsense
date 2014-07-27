@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="1" serial_port="COM6" programmer="" board="Arduino Duemilanove w/ ATmega328" includePaths=";$(LIBRARIES)/Servo" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="36286120" serialPortSpeed="" isLibrary="0">
+    <files>
+        <file name="rastejador.cpp" open="yes"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="Servo/Servo.cpp" open="no"/>
+        <external name="Servo/Servo.h" open="no"/>
+    </externals>
+</mm_project>

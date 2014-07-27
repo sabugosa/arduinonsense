@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mm_project current="0" serial_port="COM1" programmer="USBasp" board="Pololu Baby Orangutan 328P" includePaths=";$(LIBRARIES)/Playstation2" libPaths="" srcPaths="" libs="" useCodeAutomation="1" linkPrintfVersion="11821939" serialPortSpeed="" isLibrary="0">
+    <files>
+        <file name="hexapod.cpp" open="no"/>
+        <file name="mariamole_auto_generated.h" open="no"/>
+    </files>
+    <externals>
+        <external name="Playstation2/PS2X_lib.cpp" open="yes"/>
+        <external name="Playstation2/PS2X_lib.h" open="yes"/>
+    </externals>
+</mm_project>

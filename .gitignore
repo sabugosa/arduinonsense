@@ -19,3 +19,6 @@
 *.exe
 *.out
 *.app
+/projetos/mariamole/robos/PS2X_Example/build
+/projetos/mariamole/robos/hexapod/build
+/projetos/mariamole/robos/rastejador/build
