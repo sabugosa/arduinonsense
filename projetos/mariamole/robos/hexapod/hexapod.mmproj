@@ -5,7 +5,7 @@
         <file name="mariamole_auto_generated.h" open="no"/>
     </files>
     <externals>
-        <external name="Playstation2/PS2X_lib.cpp" open="yes"/>
-        <external name="Playstation2/PS2X_lib.h" open="yes"/>
+        <external name="Playstation2/PS2X_lib.cpp" open="no"/>
+        <external name="Playstation2/PS2X_lib.h" open="no"/>
     </externals>
 </mm_project>
