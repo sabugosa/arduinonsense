@@ -1,0 +1,161 @@
+import processing.video.*;
+
+Movie movFace0, movFace1, movFace2, movFace3, movFace4, movFace5;
+
+PImage discMask;
+
+
+class Cubo extends PMObject3D {
+    public Cubo (PApplet myparent) {
+        super(myparent);
+    }
+    
+    public void drawSurface(int surfaceId,PGraphics screen)
+    {   
+        screen.beginDraw();
+        if (surfaceId == 0) {
+            screen.image(movFace0, 0, 0,  800, 800);
+            screen.image(discMask, 0, 0);
+        } else if (surfaceId == 1) {
+            screen.image(movFace1, 0, 0,  800, 800);
+        } else if (surfaceId == 2) {            
+            screen.image(movFace2, 0, 0,  800, 800);
+        } else if (surfaceId == 3) {
+            screen.image(movFace0, 0, 0,  800, 800);
+        } else if (surfaceId == 4) {
+            screen.image(movFace1, 0, 0,  800, 800);
+        } else if (surfaceId == 5) {
+            screen.image(movFace2, 0, 0,  800, 800);
+        }  
+        screen.endDraw();
+    }
+}
+
+Cubo cubo;
+
+void setup() {
+    size(1024, 763, P3D);
+    cubo = new Cubo(this);
+    
+    discMask = loadImage("disc_mask.png");
+    discMask.resize(800, 800);
+    
+    movFace0 = new Movie(this, "video.mov");
+    movFace0.loop();
+    movFace0.volume(0);
+    movFace0.jump(random(movFace0.duration()));
+    
+    movFace1 = new Movie(this, "video.mov");
+    movFace1.loop();
+    movFace1.volume(0);
+    movFace1.jump(random(movFace1.duration()));
+    
+    movFace2 = new Movie(this, "video.mov");
+    movFace2.loop();
+    movFace2.volume(0);
+    movFace2.jump(random(movFace2.duration()));
+    
+   /* movFace3 = new Movie(this, "video.mov");
+    movFace3.loop();
+    movFace3.volume(0);
+    movFace3.jump(random(movFace3.duration()));
+    
+    movFace4 = new Movie(this, "video.mov");
+    movFace4.loop();
+    movFace4.volume(0);
+    movFace4.jump(random(movFace4.duration()));
+    
+    movFace5 = new Movie(this, "video.mov");
+    movFace5.loop();
+    movFace5.volume(0);
+    movFace5.jump(random(movFace5.duration()));*/
+}
+
+float step = 1;
+
+void draw() {    
+    cubo.rotate3D(cubo.angle3d);   
+    cubo.draw(); 
+
+    cubo.angle3d[1] += step;
+}
+
+void movieEvent(Movie m) {
+  m.read();
+}
+
+
+void keyPressed() {
+    //println(key);
+    switch(key) {
+    case 'w':
+        if (cubo.zoom < 1000) {
+            cubo.zoom += 1;
+        } 
+        break;        
+    case 'q':
+        if (cubo.zoom > 10) {
+            cubo.zoom -= 1;
+        } 
+        break;
+
+    case '-':
+        if (cubo.perspective > 0) {
+            cubo.perspective -= 0.001;
+        } 
+        break;
+    case '=':
+        if (cubo.perspective < 0.1) {
+            cubo.perspective += 0.001;
+        } 
+        break;    
+
+    case 'z':
+        if (cubo.angle3d[0] < 60) {
+            cubo.angle3d[0] += 1;
+            cubo.angle3d[0] = cubo.angle3d[0] % 360;
+        }            
+        break;
+    case 'a':
+        if (cubo.angle3d[0] > -15) {
+            cubo.angle3d[0] -= 1;
+            cubo.angle3d[0] = cubo.angle3d[0] % 360;
+        } 
+        break;
+
+    case 'x':
+        cubo.angle3d[1] += 1;
+        cubo.angle3d[1] = cubo.angle3d[1] % 360;                
+        break;
+    case 's':
+        cubo.angle3d[1] -= 1;
+        cubo.angle3d[1] = cubo.angle3d[1] % 360; 
+        break;
+
+    case 'c':
+        cubo.angle3d[2] += 1;
+        cubo.angle3d[2] = cubo.angle3d[2] % 360;                
+        break;
+    case 'd':
+        cubo.angle3d[2] -= 1;
+        cubo.angle3d[2] = cubo.angle3d[2] % 360; 
+        break;
+    
+    case 'f':
+        if (cubo.zoomDisc > 1.0) {
+            cubo.zoomDisc -= 0.01;
+        }            
+        break;
+    case 'v':
+        if (cubo.zoomDisc < 5.0) {
+            cubo.zoomDisc += 0.01;
+        } 
+        break;
+    
+    case ' ':
+        cubo.calibrating = !cubo.calibrating;
+                        
+        break;
+    }
+}
+

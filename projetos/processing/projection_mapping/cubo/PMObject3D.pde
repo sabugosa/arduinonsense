@@ -1,11 +1,22 @@
-//import java.util.Iterator;
-//import java.util.ListIterator;
+/*
+This library supports rotating video projection mapping
 
-//float[][][] cubo = new int[6][4][3];
-PGraphics offscreen;
-float perspective = 0.0;//20;
+It requires a cubic projection screen. The library will enable users to map any Processing content on each face of this cube
 
+The output (camera view) can be rotated, zoomed in and out and can also have its perspective changed, in order to adjust the projected cube into the vertices of the real-world cube (The projection screen)
 
+The cube can be rotated only on Y axis. Camera can be rotated only on X axis.
+
+In order to add your own content, extend the class PMObject3D on your sketch, and create your own implementation of the following method. It will be called on every 'draw' loop. 
+    public void drawSurface(int surfaceId,PGraphics screen)
+
+-------------------------------------------------------------------------------------------------------
+Author: Alex Porto
+Date: 19-Mar-2015
+-------------------------------------------------------------------------------------------------------
+*/
+
+import deadpixel.keystone.*;
 
 class PMSurface {
     float[][]vertices3D = { 
@@ -36,36 +47,43 @@ class PMSurface {
             1.0, -1.0
         }
     };
-    /*float[]Normal = {
-        -1.0, -1.0, -1.0
-    };*/
-    float visibility;
+    Boolean visibility;
+    CornerPinSurface ksSurface;
+    PGraphics screen;
+    float [][]oldMeshXY = { {0,0},{800,0},{800,800},{0,800} };
+    //Boolean meshInitialized = false;
 }  
 
 
 class PMObject3D { 
-    //PMSurface [] surfaces;
-    //List<PMSurface> surfaces = new ArrayList<PMSurface>();
     ArrayList<PMSurface> surfaces;
-
-    PMObject3D () {  
+    Boolean calibrating = false;
+    Keystone ks;
+    float perspective = 0.0;
+    float [] angle3d = {15, 0, 0};
+    float zoom = 100;
+    float zoomDisc = 2;
+    float centerx;
+    float centery;
+    
+    public PMObject3D (PApplet myparent) {  
         float[][][] cubo = 
         {
-            { // face frontal
+            {    // face de baixo
                 {
-                    -1.0, -1.0, 1.0
+                    -1.0, 1.0, -1.0
                 }
                 , {
-                    -1.0, 1.0, 1.0
+                    1.0, 1.0, -1.0
                 }
                 , {
                     1.0, 1.0, 1.0
                 }
                 , {
-                    1.0, -1.0, 1.0
+                    -1.0, 1.0, 1.0
                 }
-            }
-            , 
+            },           
+             
             { // face topo
                 {
                     -1.0, -1.0, -1.0
@@ -79,20 +97,19 @@ class PMObject3D {
                 , {
                     -1.0, -1.0, 1.0                    
                 }
-            }
-            , 
-            {    // face de baixo
+            },
+            { // face frontal
                 {
-                    -2.0, 1.0, -2.0
+                    -1.0, -1.0, 1.0
                 }
                 , {
-                    2.0, 1.0, -2.0
+                    1.0, -1.0, 1.0
                 }
                 , {
-                    2.0, 1.0, 2.0
+                    1.0, 1.0, 1.0
                 }
                 , {
-                    -2.0, 1.0, 2.0
+                    -1.0, 1.0, 1.0
                 }
             }
             , 
@@ -101,50 +118,56 @@ class PMObject3D {
                     -1.0, -1.0, -1.0
                 }
                 , {
-                    -1.0, 1.0, -1.0
-                }
-                , {
-                    -1.0, 1.0, 1.0
-                }
-                , {
                     -1.0, -1.0, 1.0
+                }
+                , {
+                    -1.0, 1.0, 1.0                    
+                }
+                , {
+                    -1.0, 1.0, -1.0
                 }
             }
             , 
             {
                 { // face direita
-                    1.0, -1.0, -1.0
+                    1.0, -1.0, 1.0
                 }
                 , {
-                   1.0, -1.0, 1.0 
+                    1.0, -1.0, -1.0   
                 }
                 , {
-                    1.0, 1.0, 1.0
+                    1.0, 1.0, -1.0                                        
                 }
                 , {                    
-                    1.0, 1.0, -1.0
+                    1.0, 1.0, 1.0
                 }
             }
             , 
             {
                 { // face do fundo
-                    -1.0, -1.0, -1.0
-                }
-                , {
                     1.0, -1.0, -1.0
                 }
                 , {
-                    1.0, 1.0, -1.0
+                    -1.0, -1.0, -1.0
                 }
                 , {
-                    -1.0, 1.0, -1.0                    
+                    -1.0, 1.0, -1.0
+                }
+                , {
+                    1.0, 1.0, -1.0                    
                 }
             }
         };
 
+        centerx = width / 2;
+        centery = height / 2;
+        
+        ks = new Keystone(myparent);
         surfaces = new ArrayList<PMSurface>();
-        for (int s=0; s < cubo.length; s++) {
+        for (int s=0; s < cubo.length; s++) {            
             PMSurface surface = new PMSurface();
+            surface.ksSurface = ks.createCornerPinSurface(800, 800, 20);
+            surface.screen = createGraphics(800, 800, P3D); 
             for (int v=0; v < 4; v++) {
                 for (int p=0; p < 3; p++) {
                     surface.vertices3D[v][p] = cubo[s][v][p];
@@ -154,24 +177,29 @@ class PMObject3D {
         }
     } // Constructor
 
-    
-
-    //private void rotateSurface (int surfaceId, float[]angle3d)
     public void rotate3D (float[] angle3d)
     {    
-        float ax=0;
+       /* float ax=0;
         float ay=0;
         float az=0;
         float bx=0;
         float by=0;
         float bz=0;
         
+        float []xp= {0,0,0,0};
+        */
         for (int s=0; s < surfaces.size(); s++) {            
             PMSurface surface = surfaces.get(s);
             for (int vertice=0; vertice < 4; vertice++) {                
                 float x3d = surface.vertices3D[vertice][0];
                 float y3d = surface.vertices3D[vertice][1];   
                 float z3d = surface.vertices3D[vertice][2];
+                
+                if (s == 0) {
+                    // permitindo o ajuste do tamanho de baixo (disco) pode ser calibrada
+                    x3d = x3d * zoomDisc;
+                    z3d = z3d * zoomDisc;
+                }
     
                 float x2d = 0;
                 float y2d = 0;
@@ -239,18 +267,16 @@ class PMObject3D {
                     z3d = z2d;
                 }
                 
-                if (vertice == 0) {
+                /*if (vertice == 0) {
                     ax = x3d; ay = y3d; az = z3d;
-                    bx = x3d; by = y3d; bz = z3d;
+                    bx = x3d; by = y3d; bz = z3d;                    
                 }                 
                 if (vertice == 1) {
                     ax = x3d - ax; ay = y3d - ay; az = z3d - az;                    
                 }
                 if (vertice == 3) {
                     bx = x3d - bx; by = y3d - by; bz = z3d - bz;                    
-                }
-            
-                
+                }*/
     
                 // No eixo x rotacionamos a camera, nao o objeto
     
@@ -285,6 +311,8 @@ class PMObject3D {
                 
                 x2d = x2d * (perspective * z2d + (1-perspective));
                 y2d = y2d * (perspective * z2d + (1-perspective));
+                
+                //xp[vertice]= x2d;
                 //x2d = x2d * (z2d / perspective);
                 //y2d = y2d * (z2d / perspective);
                 
@@ -304,7 +332,7 @@ class PMObject3D {
             } // vertices
             
             // calcula a normal da superficie
-            float nx = ay*bz - az*by;
+            /*float nx = ay*bz - az*by;
             //float ny = ax*bz - az*bx;
             float ny = az*bx - ax*bz;
             float nz = ax*by - ay*bx;
@@ -322,53 +350,81 @@ class PMObject3D {
             float mn = sqrt(nx*nx + ny*ny + nz*nz);
             
             // calcula a visibilidade usando o angulo entre a normal da superficie e o vetor da camera
-            surface.visibility = dot / (mc*mn);
+            surface.visibility = dot / (mc*mn);*/
             
-            /*if (s == 1) {
-                println(nx + ", " + ny + ", " + nz);//surface.visibility);
-            }            
-            println("ddd " + angle3d[0]);*/
+            if (s < 2) {
+                surface.visibility = true;
+            } else {
+                surface.visibility = (surface.vertices2D[0][0] < surface.vertices2D[1][0]) && (surface.vertices2D[0][0] < surface.vertices2D[2][0]); 
+                //surface.visibility = (xp[0] <= xp[1]) && (xp[0] <= xp[2]);
+            }
+                        
+            // Ajusta os 4 cantos do warped meshsurface.ksSurface.moveMeshPointBy(CornerPinSurface.TL, surface.vertices2D[0][0] - surface.oldMeshXY[0][0], surface.vertices2D[0][1] - surface.oldMeshXY[0][1]);
+	    surface.ksSurface.moveMeshPointBy(CornerPinSurface.TL, surface.vertices2D[0][0] - surface.oldMeshXY[0][0], surface.vertices2D[0][1] - surface.oldMeshXY[0][1]);
+            surface.ksSurface.moveMeshPointBy(CornerPinSurface.TR, surface.vertices2D[1][0] - surface.oldMeshXY[1][0], surface.vertices2D[1][1] - surface.oldMeshXY[1][1]);
+            surface.ksSurface.moveMeshPointBy(CornerPinSurface.BR, surface.vertices2D[2][0] - surface.oldMeshXY[2][0], surface.vertices2D[2][1] - surface.oldMeshXY[2][1]);
+            surface.ksSurface.moveMeshPointBy(CornerPinSurface.BL, surface.vertices2D[3][0] - surface.oldMeshXY[3][0], surface.vertices2D[3][1] - surface.oldMeshXY[3][1]);
+            
+            for (int i=0; i < 4; i++) {
+                for (int j=0; j < 2; j++) {
+                    surface.oldMeshXY[i][j] = surface.vertices2D[i][j];
+                }
+            }
             
             surfaces.set(s, surface);
         } // for surfaces
         //return ret;
     } //rotate3D
     
+    public void drawSurface(int surfaceId,PGraphics screen)
+    {   
+   
+    }
+    
     public void draw() 
     {
-        background(0, 0, 100);  
-        strokeWeight(1);
-        stroke(0, 0, 150);
-        for (int y=0; y < 20; y++) {
-            line(0, height / 20 * y, width, height / 20 * y);
+        if (calibrating) {
+            background(0, 0, 100);  
+            strokeWeight(1);
+            stroke(0, 0, 150);
+            for (int y=0; y < 20; y++) {
+                line(0, height / 20 * y, width, height / 20 * y);
+            }
+            for (int x=0; x < 20; x++) {
+                line(width / 20 * x, 0, width / 20 * x, height);
+            }
+        } else {        
+            background(0);
         }
-        for (int x=0; x < 20; x++) {
-            line(width / 20 * x, 0, width / 20 * x, height);
-        }
-
-        //fill(150, 0, 0, 100);
-        //noFill(); 
-        strokeWeight(2);
-        stroke(255, 0, 0);
         for (int s=0; s < surfaces.size(); s++) {
-            if (s == 0) {
-                if (surfaces.get(s).visibility < 0) {
-                    fill(150, 0, 0, 100);
+            if (surfaces.get(s).visibility) {
+                //if (s == 2) {
+                    drawSurface(s, surfaces.get(s).screen);
+                    surfaces.get(s).ksSurface.render(surfaces.get(s).screen);
+                //}
+            }
+        }
+        if (calibrating) {       
+
+            strokeWeight(1);
+            stroke(255, 0, 0);
+            for (int s=0; s < surfaces.size(); s++) {
+                if (s == 2) {
+                    if (surfaces.get(s).visibility) {
+                        noFill();
+                        //fill(150, 0, 0, 100);
+                    } else {
+                        noFill();
+                    }
                 } else {
                     noFill();
                 }
-            } else {
-                noFill();
-            }
         
-            //if (surfaces.get(s).visibility < 1) {
-            if (true) {
                 beginShape();         
                 for (int v=0; v < 4; v++) {            
                     float x2d = surfaces.get(s).vertices2D[v][0];
                     float y2d = surfaces.get(s).vertices2D[v][1];
                     vertex(x2d, y2d);
-                    //println(s + ", " + v + ": " + x2d + ", " + y2d);               
                 }
                 // repete o primeiro vertice pra fechar o shape
                 float x2d = surfaces.get(s).vertices2D[0][0];
@@ -376,7 +432,8 @@ class PMObject3D {
                 vertex(x2d, y2d);
                 endShape();
                            
-                if (surfaces.get(s).visibility < 0) {                                
+                if (surfaces.get(s).visibility) {    
+                                        
                     float x2d1 = surfaces.get(s).vertices2D[2][0];
                     float y2d1 = surfaces.get(s).vertices2D[2][1];
                     line(x2d, y2d, x2d1, y2d1);
@@ -385,100 +442,11 @@ class PMObject3D {
                     y2d = surfaces.get(s).vertices2D[1][1];                
                     x2d1 = surfaces.get(s).vertices2D[3][0];
                     y2d1 = surfaces.get(s).vertices2D[3][1];                    
-                    line(x2d, y2d, x2d1, y2d1);
+                    line(x2d, y2d, x2d1, y2d1);                    
                 }
-                
-                
             }
-        }
-        
-    } // drawWireFrame
+        } // draw wireframe if calibratin       
+    } 
     
 } // class   
-
-float centerx;
-float centery;
-float zoom = 100;
-
-PMObject3D cubo;
-
-void setup() {
-    size(800, 600, P3D);
-    //offscreen = createGraphics(400,  300,  P2D);
-    centerx = width / 2;
-    centery = height / 2;
-    cubo = new PMObject3D();
-}
-
-float [] angle3d = {
-    0, 0, 0
-};
-float step = 1;
-
-void draw() {    
-    cubo.rotate3D(angle3d);   
-    cubo.draw(); 
-
-    //angle3d[0] += step;
-    //angle3d[1] += step;
-    //angle3d[2] += step;
-}
-
-void keyPressed() {
-    //println(key);
-    switch(key) {
-    case 'w':
-        if (zoom < 1000) {
-            zoom += 1;
-        } 
-        break;        
-    case 'q':
-        if (zoom > 10) {
-            zoom -= 1;
-        } 
-        break;
-
-    case '-':
-        if (perspective > 0) {
-            perspective -= 0.001;
-        } 
-        break;
-    case '=':
-        if (perspective < 0.1) {
-            perspective += 0.001;
-        } 
-        break;    
-
-    case 'z':
-        if (angle3d[0] < 60) {
-            angle3d[0] += 1;
-            angle3d[0] = angle3d[0] % 360;
-        }            
-        break;
-    case 'a':
-        if (angle3d[0] > -15) {
-            angle3d[0] -= 1;
-            angle3d[0] = angle3d[0] % 360;
-        } 
-        break;
-
-    case 'x':
-        angle3d[1] += 1;
-        angle3d[1] = angle3d[1] % 360;                
-        break;
-    case 's':
-        angle3d[1] -= 1;
-        angle3d[1] = angle3d[1] % 360; 
-        break;
-
-    case 'c':
-        angle3d[2] += 1;
-        angle3d[2] = angle3d[2] % 360;                
-        break;
-    case 'd':
-        angle3d[2] -= 1;
-        angle3d[2] = angle3d[2] % 360; 
-        break;
-    }
-}
 
