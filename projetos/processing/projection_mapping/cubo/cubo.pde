@@ -6,6 +6,7 @@ PImage discMask;
 
 
 class Cubo extends PMObject3D {
+    float a = 0.0;
     public Cubo (PApplet myparent) {
         super(myparent);
     }
@@ -14,18 +15,40 @@ class Cubo extends PMObject3D {
     {   
         screen.beginDraw();
         if (surfaceId == 0) {
-            screen.image(movFace0, 0, 0,  800, 800);
+            //screen.image(movFace0, 0, 0,  800, 800);
             screen.image(discMask, 0, 0);
         } else if (surfaceId == 1) {
-            screen.image(movFace1, 0, 0,  800, 800);
+            //screen.image(movFace1, 0, 0,  800, 800);
         } else if (surfaceId == 2) {            
-            screen.image(movFace2, 0, 0,  800, 800);
+          //  screen.image(movFace2, 0, 0,  800, 800);
+            screen.background(0);
+            screen.lights();
+            
+            screen.stroke(0,255,0);
+            screen.pushMatrix();
+            //screen.translate(width/2, height/2, 0);
+            
+            cubo.angle3d[0] = 0;
+            //cubo.angle3d[1] = 30;
+            a = cubo.angle3d[1];
+            screen.translate(400, 400 - a* 10, -100);
+            
+            //a = a + 1;
+            a = -a * 3.1415 / 180.0;
+            screen.rotateY(a);
+            
+            //screen.rotateX(-0.4);
+            //screen.rotateY(1.25);
+            
+            screen.box(200);
+            screen.popMatrix();
+
         } else if (surfaceId == 3) {
-            screen.image(movFace0, 0, 0,  800, 800);
+            //screen.image(movFace0, 0, 0,  800, 800);
         } else if (surfaceId == 4) {
-            screen.image(movFace1, 0, 0,  800, 800);
+            //screen.image(movFace1, 0, 0,  800, 800);
         } else if (surfaceId == 5) {
-            screen.image(movFace2, 0, 0,  800, 800);
+            //screen.image(movFace2, 0, 0,  800, 800);
         }  
         screen.endDraw();
     }
@@ -40,21 +63,21 @@ void setup() {
     discMask = loadImage("disc_mask.png");
     discMask.resize(800, 800);
     
-    movFace0 = new Movie(this, "video.mov");
+    /*movFace0 = new Movie(this, "video.mov");
     movFace0.loop();
     movFace0.volume(0);
     movFace0.jump(random(movFace0.duration()));
-    
-    movFace1 = new Movie(this, "video.mov");
+    */
+    /*movFace1 = new Movie(this, "video.mov");
     movFace1.loop();
     movFace1.volume(0);
     movFace1.jump(random(movFace1.duration()));
-    
-    movFace2 = new Movie(this, "video.mov");
+/*/    
+   /* movFace2 = new Movie(this, "video.mov");
     movFace2.loop();
     movFace2.volume(0);
     movFace2.jump(random(movFace2.duration()));
-    
+    */
    /* movFace3 = new Movie(this, "video.mov");
     movFace3.loop();
     movFace3.volume(0);
@@ -77,7 +100,7 @@ void draw() {
     cubo.rotate3D(cubo.angle3d);   
     cubo.draw(); 
 
-    cubo.angle3d[1] += step;
+    //cubo.angle3d[1] += step;
 }
 
 void movieEvent(Movie m) {

@@ -61,7 +61,7 @@ class PMObject3D {
     Keystone ks;
     float perspective = 0.0;
     float [] angle3d = {15, 0, 0};
-    float zoom = 100;
+    float zoom = 200;
     float zoomDisc = 2;
     float centerx;
     float centery;
