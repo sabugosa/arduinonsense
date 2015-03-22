@@ -57,14 +57,14 @@ class PMSurface {
 
 class PMObject3D { 
     ArrayList<PMSurface> surfaces;
-    Boolean calibrating = false;
+    Boolean calibrating = true;
     Keystone ks;
     float perspective = 0.0;
     float [] angle3d = {15, 0, 0};
-    float zoom = 200;
+    float zoom = 311;
     float zoomDisc = 2;
-    float centerx;
-    float centery;
+    float centerx =749;
+    float centery = 591;
     
     public PMObject3D (PApplet myparent) {  
         float[][][] cubo = 
@@ -159,8 +159,8 @@ class PMObject3D {
             }
         };
 
-        centerx = width / 2;
-        centery = height / 2;
+        //centerx = width / 2;
+        //centery = height / 2;
         
         ks = new Keystone(myparent);
         surfaces = new ArrayList<PMSurface>();

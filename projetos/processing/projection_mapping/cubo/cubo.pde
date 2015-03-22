@@ -5,6 +5,10 @@ Movie movFace0, movFace1, movFace2, movFace3, movFace4, movFace5;
 PImage discMask;
 
 
+//plasma
+int pal []=new int [128];
+int[] cls;
+
 class Cubo extends PMObject3D {
     float a = 0.0;
     public Cubo (PApplet myparent) {
@@ -20,8 +24,9 @@ class Cubo extends PMObject3D {
         } else if (surfaceId == 1) {
             //screen.image(movFace1, 0, 0,  800, 800);
         } else if (surfaceId == 2) {            
+            screen.image(movFace0, 0, 0,  800, 800);
           //  screen.image(movFace2, 0, 0,  800, 800);
-            screen.background(0);
+            /*screen.background(0);
             screen.lights();
             
             screen.stroke(0,255,0);
@@ -31,10 +36,11 @@ class Cubo extends PMObject3D {
             cubo.angle3d[0] = 0;
             //cubo.angle3d[1] = 30;
             a = cubo.angle3d[1];
-            screen.translate(400, 400 - a* 10, -100);
             
             //a = a + 1;
             a = -a * 3.1415 / 180.0;
+            screen.translate(400, 400, -100);
+            
             screen.rotateY(a);
             
             //screen.rotateX(-0.4);
@@ -42,11 +48,12 @@ class Cubo extends PMObject3D {
             
             screen.box(200);
             screen.popMatrix();
+            */
 
         } else if (surfaceId == 3) {
-            //screen.image(movFace0, 0, 0,  800, 800);
+            screen.image(movFace1, 0, 0,  800, 800);
         } else if (surfaceId == 4) {
-            //screen.image(movFace1, 0, 0,  800, 800);
+            screen.image(movFace2, 0, 0,  800, 800);
         } else if (surfaceId == 5) {
             //screen.image(movFace2, 0, 0,  800, 800);
         }  
@@ -57,27 +64,28 @@ class Cubo extends PMObject3D {
 Cubo cubo;
 
 void setup() {
-    size(1024, 763, P3D);
+    size(1600, 1000, P3D);
     cubo = new Cubo(this);
     
     discMask = loadImage("disc_mask.png");
     discMask.resize(800, 800);
     
-    /*movFace0 = new Movie(this, "video.mov");
+    //plasma
+    movFace0 = new Movie(this, "video.mov");
     movFace0.loop();
     movFace0.volume(0);
     movFace0.jump(random(movFace0.duration()));
-    */
-    /*movFace1 = new Movie(this, "video.mov");
+    
+    movFace1 = new Movie(this, "video.mov");
     movFace1.loop();
     movFace1.volume(0);
     movFace1.jump(random(movFace1.duration()));
-/*/    
-   /* movFace2 = new Movie(this, "video.mov");
+    
+    movFace2 = new Movie(this, "video.mov");
     movFace2.loop();
     movFace2.volume(0);
     movFace2.jump(random(movFace2.duration()));
-    */
+    
    /* movFace3 = new Movie(this, "video.mov");
     movFace3.loop();
     movFace3.volume(0);
@@ -123,12 +131,12 @@ void keyPressed() {
         break;
 
     case '-':
-        if (cubo.perspective > 0) {
+        if (cubo.perspective > -0.2) {
             cubo.perspective -= 0.001;
         } 
         break;
     case '=':
-        if (cubo.perspective < 0.1) {
+        if (cubo.perspective < 0.2) {
             cubo.perspective += 0.001;
         } 
         break;    
@@ -174,11 +182,43 @@ void keyPressed() {
             cubo.zoomDisc += 0.01;
         } 
         break;
+ 
+    case 'b':
+        if (cubo.centerx > -2000) {
+            cubo.centerx -= 1;
+        }            
+        break;
+    case 'g':
+        if (cubo.centerx < 2000) {
+            cubo.centerx += 1;
+        } 
+        break;
+ 
+    case 'n':
+        if (cubo.centery > -2000) {
+            cubo.centery -= 1;
+        }            
+        break;
+    case 'h':
+        if (cubo.centery < 2000) {
+            cubo.centery += 1;
+        } 
+        break;
+ 
     
     case ' ':
         cubo.calibrating = !cubo.calibrating;
                         
         break;
     }
+    
+     println(" ");
+     println("cx: " + cubo.centerx + ", cy: " + cubo.centery);
+     println("zoom: " + cubo.zoom + ", persective: " + cubo.perspective);
+     println("ax: " + cubo.angle3d[0] + ", ay: " + cubo.angle3d[1]);
+     //println("cx:" + cubo.centerx + ", cy:" + cubo.centery);
+     //println("cx:" + cubo.centerx + ", cy:" + cubo.centery);
+     //println("cx:" + cubo.centerx + ", cy:" + cubo.centery); 
+      
 }
 
